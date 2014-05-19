@@ -161,12 +161,6 @@ class PopupMenu:
         item = Gtk.MenuItem('About')
         item.connect('activate', self._on_about)
         self._menu.append(item)
-
-        # XXX: For development, remove later.
-        item = Gtk.MenuItem('Quit')
-        item.connect('activate', self._on_quit)
-        self._menu.append(item)
-
         self._menu.show_all()
 
     def popup(self, widget, button, time):
@@ -180,9 +174,6 @@ class PopupMenu:
 
     def _on_reload(self, widget, data=None):
         self._ctl.reload()
-
-    def _on_quit(self, widget, data=None):
-        Gtk.main_quit()
 
     def _on_about(self, widget, data=None):
         about_dialog = Gtk.AboutDialog()
