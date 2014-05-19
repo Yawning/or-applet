@@ -1,0 +1,7 @@
+*.pyc
+build/*
+dist/*
+or_applet.egg-info/*
+
+*.swp
+*.swo
