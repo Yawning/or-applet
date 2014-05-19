@@ -7,6 +7,8 @@ This is a stem/pygobject based Tor controller.  It primarily exists so I can
 get quick info out of the system Tor instance on my laptop, if it happens to be
 useful for other people, that's great.
 
+![screeenshot](https://raw.github.com/Yawning/or-applet/screenshots/screenshot-0.0.1.png)
+
 ### Dependencies
 
  * [pygobject3](https://wiki.gnome.org/PyGObject)
