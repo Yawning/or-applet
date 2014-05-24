@@ -14,7 +14,7 @@ useful for other people, that's great.
  * [pygobject3](https://wiki.gnome.org/PyGObject)
  * [stem](https://stem.torproject.org/)
 
-The versions used for development are pygobject 3.12 and stem 32b9f75, other
+The versions used for development are pygobject 3.12 and stem fb2734b, other
 versions are not supported.  The "Stem Prompt" launcher requires urxvt and
 stem/interpretor (not installed by default) to work, and modifications to the
 code to fix readline brain damage with the colored prompt.

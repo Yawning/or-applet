@@ -167,10 +167,9 @@ class PopupMenu:
         self._menu.popup(None, None, _pos, self._status_icon._icon, button, time)
 
     def _on_prompt(self, widget, data=None):
-        # This depends on stem/interpretor actually being installed (it's not by
-        # default), and stem/interpretor/__init__ being patched so that readline
-        # doesn't puke and fuck up line wrapping.
-        Popen('/usr/bin/urxvt -e python2 -c "from stem.interpretor import main; main()"', shell=True)
+        # This depends on stem/interpreter, and stem/interpreter/__init__ being
+        # patched so that readline doesn't puke and fuck up line wrapping.
+        Popen('/usr/bin/urxvt -e python2 -c "from stem.interpreter import main; main()"', shell=True)
 
     def _on_reload(self, widget, data=None):
         self._ctl.reload()
