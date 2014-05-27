@@ -30,106 +30,89 @@ def _format_circuit(circuit):
     s += 'Status:   ' + _format_status(circuit.status) + '\n'
     s += 'Purpose:  ' + _format_purpose(circuit.purpose) + '\n'
     s += 'Flags: \n' + _format_build_flags(circuit.build_flags)
-    if circuit.hs_state != None:
+    if circuit.hs_state is not None:
         s += 'HS State: ' + _format_hs_state(circuit.hs_state) + '\n'
-    if circuit.path != None and len(circuit.path) > 0:
+    if circuit.path is not None and circuit.path:
         s += 'Path:\n'
         s += _format_path(circuit.path)
-    if circuit.reason != None:
+    if circuit.reason is not None:
         s += 'Local Close Reason:  '  + _format_close_reason(circuit.reason)
-    if circuit.remote_reason != None:
+    if circuit.remote_reason is not None:
         s += 'Remote Close Reason: ' + _format_close_reason(circuit.remote_reason)
     return s
 
+_FORMAT_STATUSES = {
+    CircStatus.LAUNCHED: 'LAUNCHED (circuit ID assigned to new circuit)',
+    CircStatus.BUILT: 'BUILT (all hops finished, can now accept streams)',
+    CircStatus.EXTENDED: 'EXTENDED (one more hop has been completed)',
+    CircStatus.FAILED: 'FAILED (circuit closed (was not built))',
+    CircStatus.CLOSED: 'CLOSED (circuit closed (was built))'
+}
+
 def _format_status(status):
-    if status == CircStatus.LAUNCHED:
-        return 'LAUNCHED (circuit ID assigned to new circuit)'
-    elif status == CircStatus.BUILT:
-        return 'BUILT (all hops finished, can now accept streams)'
-    elif status == CircStatus.EXTENDED:
-        return 'EXTENDED (one more hop has been completed)'
-    elif status == CircStatus.FAILED:
-        return 'FAILED (circuit closed (was not built))'
-    elif status == CircStatus.CLOSED:
-        return 'CLOSED (circuit closed (was built))'
-    return str(status)
+    return _FORMAT_STATUSES.get(status, str(status))
+
+_FORMAT_PURPOSES = {
+    CircPurpose.GENERAL: 'GENERAL (circuit for AP and/or directory request streams)',
+    CircPurpose.HS_CLIENT_INTRO: 'HS_CLIENT_INTRO (HS client-side introduction-point circuit)',
+    CircPurpose.HS_CLIENT_REND: 'HS_CLIENT_REND (HS client-side rendezvous circuit; carries AP streams)',
+    CircPurpose.HS_SERVICE_INTRO: 'HS_SERVICE_INTRO (HS service-side introduction-point circuit)',
+    CircPurpose.HS_SERVICE_REND: 'HS_SERVICE_REND (HS service-side rendezvous circuit)',
+    CircPurpose.TESTING: 'TESTING (reachability-testing circuit; carries no traffic)',
+    CircPurpose.CONTROLLER: 'CONTROLLER (circuit built by a controller)',
+    CircPurpose.MEASURE_TIMEOUT: 'MEASURE_TIMEOUT (circuit being kept around to see how long it takes)'
+}
 
 def _format_purpose(purpose):
-    if purpose == CircPurpose.GENERAL:
-        return 'GENERAL (circuit for AP and/or directory request streams)'
-    elif purpose == CircPurpose.HS_CLIENT_INTRO:
-        return 'HS_CLIENT_INTRO (HS client-side introduction-point circuit)'
-    elif purpose == CircPurpose.HS_CLIENT_REND:
-        return 'HS_CLIENT_REND (HS client-side rendezvous circuit; carries AP streams)'
-    elif purpose == CircPurpose.HS_SERVICE_INTRO:
-        return 'HS_SERVICE_INTRO (HS service-side introduction-point circuit)'
-    elif purpose == CircPurpose.HS_SERVICE_REND:
-        return 'HS_SERVICE_REND (HS service-side rendezvous circuit)'
-    elif purpose == CircPurpose.TESTING:
-        return 'TESTING (reachability-testing circuit; carries no traffic)'
-    elif purpose == CircPurpose.CONTROLLER:
-        return 'CONTROLLER (circuit built by a controller)'
-    elif purpose == CircPurpose.MEASURE_TIMEOUT:
-        return 'MEASURE_TIMEOUT (circuit being kept around to see how long it takes)'
-    return str(purpose)
+    return _FORMAT_PURPOSES.get(purpose, str(purpose))
+
+_FORMAT_FLAGS = {
+    CircBuildFlag.ONEHOP_TUNNEL: 'ONEHOP_TUNNEL (one-hop circuit, used for tunneled directory conns)',
+    CircBuildFlag.IS_INTERNAL: 'IS_INTERNAL (internal circuit, not to be used for exiting streams)',
+    CircBuildFlag.NEED_CAPACITY: 'NEED_CAPACITY (this circuit must use only high-capacity nodes)',
+    CircBuildFlag.NEED_UPTIME: 'NEED_UPTIME (this circuit must use only high-uptime nodes)'
+}
 
 def _format_build_flags(flags):
-    s = ''
+    s_list = []
     for flag in flags:
-        if flag == CircBuildFlag.ONEHOP_TUNNEL:
-            s += ' ONEHOP_TUNNEL (one-hop circuit, used for tunneled directory conns)\n'
-        elif flag == CircBuildFlag.IS_INTERNAL:
-            s += ' IS_INTERNAL (internal circuit, not to be used for exiting streams)\n'
-        elif flag == CircBuildFlag.NEED_CAPACITY:
-            s += ' NEED_CAPACITY (this circuit must use only high-capacity nodes)\n'
-        elif flag == CircBuildFlag.NEED_UPTIME:
-            s += ' NEED_UPTIME (this circuit must use only high-uptime nodes)\n'
-        else:
-            s += ' ' + str(flag)
-    return s
+        s_list.append(' %s\n' % _FORMAT_FLAGS.get(flag, str(flag)))
+    return ''.join(s_list)
 
 def _format_path(path):
-    s = ''
+    s_list = []
     idx = 0
     for hop in path:
-        s += ' [' + str(idx) + ']: ' + hop[0] + '~' + hop[1] + '\n'
+        s_list.append(' [%d]: %s~%s\n' % (idx, hop[0], hop[1]))
         idx += 1
-    return s
+    return ''.join(s_list)
+
+_FORMAT_HS_STATE = {
+    HiddenServiceState.HSCI_CONNECTING: 'HSCI_CONNECTING (connecting to intro point)',
+    HiddenServiceState.HSCI_INTRO_SENT: 'HSCI_INTRO_SENT (sent INTRODUCE1; waiting for reply from IP)',
+    HiddenServiceState.HSCI_DONE: 'HSCI_DONE (received reply from IP relay; closing)',
+    HiddenServiceState.HSCR_CONNECTING: 'HSCR_CONNECTING (connecting to or waiting for reply from RP)',
+    HiddenServiceState.HSCR_ESTABLISHED_IDLE: 'HSCR_ESTABLISHED_IDLE (established RP; waiting for introduction)',
+    HiddenServiceState.HSCR_ESTABLISHED_WAITING: 'HSCR_ESTABLISHED_WAITING (introduction sent to HS; waiting for rend)',
+    HiddenServiceState.HSCR_JOINED: 'HSCR_JOINED (connected to HS)',
+    HiddenServiceState.HSSI_CONNECTING: 'HSSI_CONNECTING (connecting to intro point)',
+    HiddenServiceState.HSSI_ESTABLISHED: 'HSSI_ESTABLISHED (established intro point)',
+    HiddenServiceState.HSSR_CONNECTING: 'HSSR_CONNECTING (connecting to client\'s rend point)',
+    HiddenServiceState.HSSR_JOINED: 'HSSR_JOINED (connected to client\'s RP circuit)',
+}
 
 def _format_hs_state(hs_state):
-    if hs_state == HiddenServiceState.HSCI_CONNECTING:
-        return 'HSCI_CONNECTING (connecting to intro point)'
-    elif hs_state == HiddenServiceState.HSCI_INTRO_SENT:
-        return 'HSCI_INTRO_SENT (sent INTRODUCE1; waiting for reply from IP)'
-    elif hs_state == HiddenServiceState.HSCI_DONE:
-        return 'HSCI_DONE (received reply from IP relay; closing)'
-    elif hs_state == HiddenServiceState.HSCR_CONNECTING:
-        return 'HSCR_CONNECTING (connecting to or waiting for reply from RP)'
-    elif hs_state == HiddenServiceState.HSCR_ESTABLISHED_IDLE:
-        return 'HSCR_ESTABLISHED_IDLE (established RP; waiting for introduction)'
-    elif hs_state == HiddenServiceState.HSCR_ESTABLISHED_WAITING:
-        return 'HSCR_ESTABLISHED_WAITING (introduction sent to HS; waiting for rend)'
-    elif hs_state == HiddenServiceState.HSCR_JOINED:
-        return 'HSCR_JOINED (connected to HS)'
-    elif hs_state == HiddenServiceState.HSSI_CONNECTING:
-        return 'HSSI_CONNECTING (connecting to intro point)'
-    elif hs_state == HiddenServiceState.HSSI_ESTABLISHED:
-        return 'HSSI_ESTABLISHED (established intro point)'
-    elif hs_state == HiddenServiceState.HSSI_CONNECTED:
-        return 'HSSR_CONNECTING (connecting to client\'s rend point)'
-    elif hs_state == HiddenServiceState.HSSI_JOINED:
-        return 'HSSR_JOINED (connected to client\'s RP circuit)'
-    return str(hs_state)
+    return _FORMAT_HS_STATE.get(hs_state, str(hs_state))
 
 def _format_close_reason(reason):
     # Fuck it, these shouldn't show up in normal use anyway.
     return str(reason)
 
 def _format_streams(streams):
-    s = ''
+    s_list = []
     for stream in streams:
-        s += ' ' + stream + '\n'
-    return s
+        s_list.append(' %s\n' % stream)
+    return ''.join(s_list)
 
 def _labeled_separator(label):
     box = Gtk.Box()
@@ -142,7 +125,7 @@ def _labeled_separator(label):
     item.set_sensitive(False)
     return item
 
-class PopupMenu:
+class PopupMenu(object):
     _ctl = None
     _menu = None
     _status_icon = None
@@ -184,7 +167,7 @@ class PopupMenu:
         about_dialog.run()
         about_dialog.destroy()
 
-class ActivateMenu:
+class ActivateMenu(object):
     _ctl = None
     _clipboard = None
     _menu = None
@@ -208,7 +191,7 @@ class ActivateMenu:
 
     def _build_dynamic_menu(self):
         circuits = self._ctl.get_circuits()
-        if circuits == None:
+        if circuits is None:
             item = Gtk.MenuItem('No circuits established')
             item.set_sensitive(False)
             self._menu.append(item)
@@ -228,14 +211,14 @@ class ActivateMenu:
 
         our_streams = []
         if CircPurpose.HS_CLIENT_INTRO in circuit.purpose or CircPurpose.HS_CLIENT_REND in circuit.purpose:
-            our_streams.append('[HS]: ' + circuit.rend_query + '.onion')
+            our_streams.append('[HS]: %s.onion' % circuit.rend_query)
         else:
             for stream in streams:
                 if stream.circ_id == circuit.id:
-                    our_streams.append('[' + stream.id + ']: ' + stream.target)
-        if len(our_streams) == 0:
+                    our_streams.append('[%s]: %s' % (stream.id, stream.target))
+        if not our_streams:
             our_streams.append('No streams established')
-        stream_info = 'Streams:\n' + _format_streams(our_streams)
+        stream_info = 'Streams:\n%s' %  _format_streams(our_streams)
 
         menu = Gtk.Menu()
         menu.append(_labeled_separator('Streams'))
@@ -246,7 +229,8 @@ class ActivateMenu:
         menu.append(_labeled_separator('Path'))
         idx = 0
         for hop in circuit.path:
-            item = Gtk.MenuItem('[' + str(idx) + ']: ' + hop[0] + '~' + hop[1])
+            item_text = '[%d]: %s~%s' % (idx, hop[0], hop[1])
+            item = Gtk.MenuItem(item_text)
             menu.append(item)
             idx += 1
         menu.append(Gtk.SeparatorMenuItem())
@@ -265,7 +249,7 @@ class ActivateMenu:
     def _on_copy_circuit(self, widget, data=None):
         self._clipboard.set_text(data, -1)
 
-class OrStatusIcon:
+class OrStatusIcon(object):
     _ctl = None
     _icon = None
     _menu_popup = None

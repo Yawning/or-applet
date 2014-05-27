@@ -19,7 +19,7 @@ from gi.repository import GLib,Notify
 from stem import SocketError
 from stem.control import Controller,EventType,Signal,State
 
-class OrCtl:
+class OrCtl(object):
     _control = None
     _status_icon = None
     _notify = None
@@ -40,22 +40,22 @@ class OrCtl:
             self._control.signal(Signal.NEWNYM)
 
     def is_newnym_available(self):
-        if self._control == None:
+        if self._control is None:
             return False
         return self._control.is_newnym_available()
 
     def reload(self):
-        if self._control == None:
+        if self._control is None:
             return
         self._control.signal(Signal.RELOAD)
 
     def get_circuits(self):
-        if self._control == None:
+        if self._control is None:
             return None
         return self._control.get_circuits(default=None)
 
     def get_streams(self):
-        if self._control == None:
+        if self._control is None:
             return None
         return self._control.get_streams(default=None)
 
