@@ -3,7 +3,7 @@
 
 ### What?
 
-This is a stem/pygobject based Tor controller.  It primarily exists so I can
+This is a Stem/pygobject based Tor controller.  It primarily exists so I can
 get quick info out of the system Tor instance on my laptop, if it happens to be
 useful for other people, that's great.
 
@@ -12,9 +12,9 @@ useful for other people, that's great.
 ### Dependencies
 
  * [pygobject3](https://wiki.gnome.org/PyGObject)
- * [stem](https://stem.torproject.org/)
+ * [Stem](https://stem.torproject.org/)
 
-The versions used for development are pygobject 3.12 and stem cec8c1, other
+The versions used for development are pygobject 3.12 and Stem 1.2, other
 versions are not supported.
 
 ### WON'T DO
