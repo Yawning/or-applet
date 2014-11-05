@@ -62,13 +62,16 @@ class OrCtl(object):
     def _on_connect(self):
         try:
             self._control = Controller.from_port()
-            self._control.add_status_listener(self._on_status)
-            self._status_icon.set_tooltip_text('Stem: Authenticating')
-            GLib.timeout_add_seconds(1, self._on_auth)
-            return False
-        except SocketError as e:
-            self._status_icon.set_tooltip_text('Failed to initialize stem: %s' % e)
-            return True
+        except SocketError:
+            try:
+                self._control = Controller.from_socket_file()
+            except SocketError:
+                self._status_icon.set_tooltip_text('Failed to initialize stem')
+                return True
+        self._control.add_status_listener(self._on_status)
+        self._status_icon.set_tooltip_text('Stem: Authenticating')
+        GLib.timeout_add_seconds(1, self._on_auth)
+        return False
 
     def _on_auth(self):
         try:
