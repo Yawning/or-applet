@@ -59,6 +59,14 @@ class OrCtl(object):
             return None
         return self._control.get_streams(default=None)
 
+    def close_circuit(self, id):
+        if self._control is None:
+            return
+        try:
+            self._control.close_circuit(id)
+        except:
+            pass
+
     def _on_connect(self):
         try:
             self._control = Controller.from_port()

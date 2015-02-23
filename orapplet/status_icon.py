@@ -239,6 +239,10 @@ class ActivateMenu(object):
         item.connect('activate', self._on_copy_circuit, circ_info + stream_info)
         menu.append(item)
 
+        item = Gtk.MenuItem('Close circuit')
+        item.connect('activate', self._on_close_circuit, circuit.id)
+        menu.append(item)
+
         item = Gtk.MenuItem('Circuit: ' + circuit.id)
         item.set_submenu(menu)
         self._menu.append(item)
@@ -248,6 +252,9 @@ class ActivateMenu(object):
 
     def _on_copy_circuit(self, widget, data=None):
         self._clipboard.set_text(data, -1)
+
+    def _on_close_circuit(self, widget, data=None):
+        self._ctl.close_circuit(data)
 
 class OrStatusIcon(object):
     _ctl = None
