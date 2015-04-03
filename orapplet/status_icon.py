@@ -63,6 +63,18 @@ _FORMAT_PURPOSES = {
     CircPurpose.MEASURE_TIMEOUT: 'MEASURE_TIMEOUT (circuit being kept around to see how long it takes)'
 }
 
+_HS_PURPOSES = [
+    CircPurpose.HS_CLIENT_INTRO,
+    CircPurpose.HS_CLIENT_REND,
+    CircPurpose.HS_SERVICE_INTRO,
+    CircPurpose.HS_SERVICE_REND
+]
+
+def _filter_circuit(circuit):
+    if CircBuildFlag.IS_INTERNAL in circuit.build_flags:
+        return circuit.purpose in _HS_PURPOSES
+    return True
+
 def _format_purpose(purpose):
     return _FORMAT_PURPOSES.get(purpose, str(purpose))
 
@@ -204,14 +216,17 @@ class ActivateMenu(object):
     def _build_circuit_menu(self, circuit, streams):
         # Skip displaying internal circuits, unless they are actually hidden
         # service circuits in disguise.
-        if CircBuildFlag.IS_INTERNAL in circuit.build_flags:
-            if (CircPurpose.HS_CLIENT_INTRO not in circuit.purpose) and (CircPurpose.HS_CLIENT_REND not in circuit.purpose):
-                return
+        if not _filter_circuit(circuit):
+            return
         circ_info = _format_circuit(circuit)
 
         our_streams = []
         if CircPurpose.HS_CLIENT_INTRO in circuit.purpose or CircPurpose.HS_CLIENT_REND in circuit.purpose:
-            our_streams.append('[HS]: %s.onion' % circuit.rend_query)
+            our_streams.append('[HS Client]: %s.onion' % circuit.rend_query)
+        elif CircPurpose.HS_SERVICE_INTRO in circuit.purpose:
+            our_streams.append('[HS Server Intro]: %s.onion' % circuit.rend_query)
+        elif CircPurpose.HS_SERVICE_REND in circuit.purpose:
+            our_streams.append('[HS Server Rend]: %s.onion' % circuit.rend_query)
         else:
             for stream in streams:
                 if stream.circ_id == circuit.id:
@@ -240,7 +255,10 @@ class ActivateMenu(object):
         menu.append(item)
 
         item = Gtk.MenuItem('Close circuit')
-        item.connect('activate', self._on_close_circuit, circuit.id)
+        if CircPurpose.HS_SERVICE_INTRO not in circuit.purpose and CircPurpose.HS_SERVICE_REND not in circuit.purpose:
+            item.connect('activate', self._on_close_circuit, circuit.id)
+        else:
+            item.set_sensitive(False)
         menu.append(item)
 
         item = Gtk.MenuItem('Circuit: ' + circuit.id)
