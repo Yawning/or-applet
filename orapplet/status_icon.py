@@ -220,6 +220,12 @@ class ActivateMenu(object):
             return
         circ_info = _format_circuit(circuit)
 
+        our_auth = ""
+        if circuit.socks_username:
+            our_auth = circuit.socks_username
+        if circuit.socks_password:
+            our_auth += ':' + circuit.socks_password
+
         our_streams = []
         if CircPurpose.HS_CLIENT_INTRO in circuit.purpose or CircPurpose.HS_CLIENT_REND in circuit.purpose:
             our_streams.append('[HS Client]: %s.onion' % circuit.rend_query)
@@ -236,7 +242,13 @@ class ActivateMenu(object):
         stream_info = 'Streams:\n%s' %  _format_streams(our_streams)
 
         menu = Gtk.Menu()
-        menu.append(_labeled_separator('Streams'))
+
+        stream_sep = ''
+        if len(our_auth) > 0:
+            stream_sep = 'Streams (%s)' % our_auth
+        else:
+            stream_sep = 'Streams'
+        menu.append(_labeled_separator(stream_sep))
         for s in our_streams:
             item = Gtk.MenuItem(s)
             menu.append(item)
