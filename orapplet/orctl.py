@@ -23,9 +23,11 @@ class OrCtl(object):
     _control = None
     _status_icon = None
     _notify = None
+    _forceSocket = False
 
-    def __init__(self):
+    def __init__(self, forceSocket = False):
         self._notify = Notify.Notification.new('or-applet', None, None)
+        self._forceSocket = forceSocket
         pass
 
     def set_status_icon(self, status_icon):
@@ -68,9 +70,12 @@ class OrCtl(object):
             pass
 
     def _on_connect(self):
-        try:
-            self._control = Controller.from_port()
-        except SocketError:
+        if not self._forceSocket:
+            try:
+                self._control = Controller.from_port()
+            except SocketError:
+                pass
+        if not self._control:
             try:
                 self._control = Controller.from_socket_file()
             except SocketError:

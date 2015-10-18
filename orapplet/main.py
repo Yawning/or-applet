@@ -26,7 +26,7 @@ def main():
     Notify.init('orapplet')
 
     # Initialize stem and the status icon.
-    ctl = OrCtl()
+    ctl = OrCtl(True)
     icon = OrStatusIcon(ctl)
     ctl.set_status_icon(icon)
     ctl.start_loop()
