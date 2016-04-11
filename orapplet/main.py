@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with or-applet.  If not, see <http://www.gnu.org/licenses/>.
 
+from gi import require_version
+require_version('Gtk', '3.0')
+require_version('Notify', '0.7')
 from gi.repository import Gtk,Notify
 
 from orapplet.orctl import OrCtl

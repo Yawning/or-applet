@@ -21,8 +21,11 @@ from stem import CircBuildFlag,CircClosureReason,CircPurpose,CircStatus,HiddenSe
 
 from orapplet.utils import get_leek_icon
 
-def _pos(menu, icon):
-    return (Gtk.StatusIcon.position_menu(menu, icon))
+def _pos(menu, x, y, icon):
+    print(x)
+    print(y)
+    print(icon)
+    return (Gtk.StatusIcon.position_menu(menu, x, y, icon))
 
 def _format_circuit(circuit):
     s  = 'Circuit:  ' + circuit.id + '\n'
